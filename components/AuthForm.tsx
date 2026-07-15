@@ -9,14 +9,12 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { toast } from "sonner";
-
-// import { auth } from "@/firebase/client";
-// import {
-//     createUserWithEmailAndPassword,
-//     signInWithEmailAndPassword,
-// } from "firebase/auth";
-//
-// import { signIn, signUp } from "@/lib/actions/auth.action";
+import { auth } from "@/firebase/client";
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+} from "firebase/auth";
+import { signIn, signUp } from "@/lib/actions/auth.actions";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -59,61 +57,62 @@ export default function AuthForm({ type }: Props) {
         },
     });
 
-    // async function onSubmit(values: FormValues) {
-    //     try {
-    //         setLoading(true);
-    //
-    //         if (!isSignIn) {
-    //             const { name, email, password } = values;
-    //
-    //             const credential = await createUserWithEmailAndPassword(
-    //                 auth,
-    //                 email,
-    //                 password
-    //             );
-    //
-    //             const result = await signUp({
-    //                 uid: credential.user.uid,
-    //                 name: name!,
-    //                 email,
-    //                 password,
-    //             });
-    //
-    //             if (!result.success) {
-    //                 toast.error(result.message);
-    //                 return;
-    //             }
-    //
-    //             toast.success("Account created successfully.");
-    //             router.push("/sign-in");
-    //         } else {
-    //             const { email, password } = values;
-    //
-    //             const credential = await signInWithEmailAndPassword(
-    //                 auth,
-    //                 email,
-    //                 password
-    //             );
-    //
-    //             const idToken = await credential.user.getIdToken();
-    //
-    //             await signIn({
-    //                 email,
-    //                 idToken,
-    //             });
-    //
-    //             toast.success("Signed in successfully.");
-    //             router.push("/");
-    //         }
-    //     } catch (err) {
-    //         console.error(err);
-    //         toast.error("Something went wrong.");
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // }
+    async function onSubmit(values: FormValues) {
+        try {
+            setLoading(true);
 
-    const onSubmit = async (): Promise<void> => {}
+            if (!isSignIn) {
+                const { name, email, password } = values;
+
+                const credential = await createUserWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                );
+
+                const result = await signUp({
+                    uid: credential.user.uid,
+                    name: name!,
+                    email,
+                    password,
+                });
+
+
+                if (!result?.success) {
+                    toast.error(result?.message);
+                    return;
+                }
+
+                toast.success("Account created successfully.");
+                router.push("/sign-in");
+            } else {
+                const { email, password } = values;
+
+                const credential = await signInWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                );
+
+                const idToken = await credential.user.getIdToken();
+
+                await signIn({
+                    email,
+                    idToken,
+                });
+
+                toast.success("Signed in successfully.");
+                router.push("/");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Something went wrong.");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+
 
     return (
         <Card className="mx-auto w-full max-w-md shadow-lg">
