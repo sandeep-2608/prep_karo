@@ -48,7 +48,7 @@ export async function POST(req: Request, res: Response) {
 
     await db.collection("interviews").add(interview);
 
-    return Response.json({ success: true, data: interview }, { status: 200 });
+    return Response.json({ success: true }, { status: 200 });
   } catch (e) {
     console.error(e);
 
